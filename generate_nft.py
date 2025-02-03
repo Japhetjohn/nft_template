@@ -1,38 +1,23 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
+# Correct path to the base image
+base_image_path = r"c:\Users\Japhet\Desktop\WhatsApp Image 2025-02-03 at 00.44.26_8521e8d0.jpg"
 
-# NFT Output Folder
-OUTPUT_FOLDER = "nft_images"
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-# Create a simple NFT template
-def create_nft(name, token_id, bg_color="white", text_color="black"):
-    width, height = 500, 500
-    img = Image.new("RGB", (width, height), color=bg_color)
+# Open the base image
+base_image = Image.open(base_image_path)
 
-    draw = ImageDraw.Draw(img)
-    
-    # Define the text for NFT
-    text = f"{name} #{token_id}"
-    
-    # Load or use default font
-    try:
-        font = ImageFont.truetype("arial.ttf", 30)
-    except:
-        font = ImageFont.load_default()
+# Process other images and apply overlays, etc.
+# Example of applying a layer image:
+layer_image = Image.open(r"c:\Users\Japhet\Desktop\WhatsApp Image 2025-02-03 at 00.44.26_8521e8d0.jpg")
 
-    # Calculate text size correctly using textbbox()
-    bbox = draw.textbbox((0, 0), text, font=font)
-    text_w, text_h = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
-    # Center the text
-    draw.text(((width - text_w) / 2, (height - text_h) / 2), text, font=font, fill=text_color)
+# Ensure RGBA mode for the layer image to support transparency
+if layer_image.mode != 'RGBA':
+    layer_image = layer_image.convert('RGBA')
 
-    # Save NFT
-    filename = f"{OUTPUT_FOLDER}/{name}_{token_id}.png"
-    img.save(filename)
-    print(f"NFT saved: {filename}")
+# Paste the layer image onto the base image with transparency
+base_image.paste(layer_image, (0, 0), layer_image)
 
-# Example usage
-if __name__ == "__main__":
-    create_nft("AfriNFT", "001", bg_color="gold", text_color="black")
+# Save the final image
+base_image.save("output/final_nft.png")
